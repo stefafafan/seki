@@ -26,42 +26,60 @@ seki aggregates the logs into one simple JSON.
 $ cat access.log | seki
 [
     {
-        "uri":"/foobar",
+        "uri": "/foobar",
+        "method": "GET",
         "count": 2,
         "status_code": {
-            "200": 2,
+            "1xx": 0,
+            "2xx": 2,
+            "3xx": 0,
+            "4xx": 0,
+            "5xx": 0
         },
         "response_time": {
             "min": 0.476,
             "max": 0.732,
             "sum": 1.208,
             "avg": 0.604,
+            "p99": 0.732
         }
     },
     {
-        "uri":"/",
+        "uri": "/",
+        "method": "GET",
         "count": 1,
         "status_code": {
-            "400": 1,
+            "1xx": 0,
+            "2xx": 0,
+            "3xx": 0,
+            "4xx": 1,
+            "5xx": 0
         },
         "response_time": {
             "min": 0.239,
             "max": 0.239,
             "sum": 0.239,
             "avg": 0.239,
+            "p99": 0.239
         }
-    }
+    },
     {
-        "uri":"/hello",
+        "uri": "/hello",
+        "method": "GET",
         "count": 1,
         "status_code": {
-            "302": 1,
+            "1xx": 0,
+            "2xx": 0,
+            "3xx": 1,
+            "4xx": 0,
+            "5xx": 0
         },
         "response_time": {
             "min": 0.113,
             "max": 0.113,
             "sum": 0.113,
             "avg": 0.113,
+            "p99": 0.113
         }
     }
 ]
