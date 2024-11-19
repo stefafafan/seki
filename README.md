@@ -2,7 +2,7 @@
 
 seki is a CLI tool to help parse and aggregate access log data for further analysis. The tool is intended to be used with nginx access logs (JSON format), piped out to tools like `jq`.
 
-The name seki comes from the Japanese terms 積 (from 集積 which means accumulate) and 析 (from 分析 which means analysis). These kanji are both read "seki".
+The name seki comes from the Japanese terms 積 (from 蓄積 which means accumulate) and 析 (from 分析 which means analysis). These kanji are both read "seki".
 
 ## Installation
 
