@@ -1,6 +1,19 @@
+use clap::Parser;
 use regex::Regex;
 use serde::{Deserialize, Serialize};
-use std::io::{self, BufRead};
+use std::{
+    fs,
+    io::{self, BufRead},
+};
+
+/// A simple log aggregator that reads logs from stdin and outputs aggregated logs in JSON format.
+#[derive(Parser, Debug)]
+#[command(version, about)]
+struct Args {
+    /// Path to the config file
+    #[arg(short, long)]
+    config: Option<String>,
+}
 
 #[derive(Deserialize, Debug)]
 struct LogEntry {
@@ -41,44 +54,52 @@ struct ResponseTime {
     p99: f64,
 }
 
-fn normalize_uri(uri: &str, patterns: &[(Regex, String)]) -> String {
+#[derive(Debug, Deserialize)]
+struct Config {
+    grouping: Vec<Grouping>,
+}
+
+#[derive(Debug, Deserialize)]
+struct Grouping {
+    regexp: String,
+    name: Option<String>,
+    #[serde(skip)]
+    compiled_regexp: Option<Regex>,
+}
+
+fn compile_groupings(groupings: &mut [Grouping]) {
+    for grouping in groupings {
+        grouping.compiled_regexp = Some(Regex::new(&grouping.regexp).unwrap());
+    }
+}
+
+fn normalize_uri(uri: &str, groupings: &[Grouping]) -> String {
     let trimmed_uri = uri.split('?').next().unwrap_or(uri);
 
-    for (regex, replacement) in patterns {
-        if regex.is_match(uri) {
-            return regex.replace(uri, replacement.as_str()).to_string();
+    for grouping in groupings {
+        if let Some(ref regexp) = grouping.compiled_regexp {
+            if regexp.is_match(uri) {
+                let replacement = match &grouping.name {
+                    Some(replacement) => replacement,
+                    None => &grouping.regexp,
+                };
+                return regexp.replace(uri, replacement).to_string();
+            }
         }
     }
     trimmed_uri.to_string()
 }
 
-fn aggregate_logs(logs: Vec<LogEntry>) -> Vec<AggregatedLogEntry> {
+fn aggregate_logs(logs: Vec<LogEntry>, groupings: &[Grouping]) -> Vec<AggregatedLogEntry> {
     let mut aggregated_logs: std::collections::HashMap<(String, String), AggregatedLogEntry> =
         std::collections::HashMap::new();
 
-    let patterns = vec![
-        (
-            Regex::new(r"^/posts/\d+$").unwrap(),
-            "/posts/:id".to_string(),
-        ),
-        (
-            Regex::new(r"^/@[a-zA-Z0-9]+$").unwrap(),
-            "/@:username".to_string(),
-        ),
-        (
-            Regex::new(r"/image/.+$").unwrap(),
-            "/image/:filename".to_string(),
-        ),
-    ];
-
     for log in &logs {
-        let key = (
-            log.method.clone(),
-            normalize_uri(&log.uri.clone(), &patterns),
-        );
+        let normalized_uri = normalize_uri(&log.uri.clone(), groupings);
+        let key = (log.method.clone(), normalized_uri.clone());
         let current_log_aggregation = aggregated_logs.entry(key).or_insert(AggregatedLogEntry {
             method: log.method.clone(),
-            uri: normalize_uri(&log.uri.clone(), &patterns),
+            uri: normalized_uri.clone(),
             ..Default::default()
         });
 
@@ -155,6 +176,24 @@ fn aggregate_logs(logs: Vec<LogEntry>) -> Vec<AggregatedLogEntry> {
 }
 
 fn main() {
+    let args = Args::parse();
+
+    let default_config_path = "./config.toml";
+    let config_path = match args.config {
+        Some(path) => path,
+        None => default_config_path.to_string(),
+    };
+
+    let groupings = match fs::metadata(&config_path).is_ok() {
+        true => {
+            let config_content = fs::read_to_string(config_path).unwrap();
+            let mut config: Config = toml::from_str(&config_content).unwrap();
+            compile_groupings(&mut config.grouping);
+            config.grouping
+        }
+        false => Vec::new(),
+    };
+
     let stdin = io::stdin();
     let reader = stdin.lock();
 
@@ -165,7 +204,7 @@ fn main() {
         logs.push(entry);
     }
 
-    let aggregated_logs = aggregate_logs(logs);
+    let aggregated_logs = aggregate_logs(logs, &groupings);
     let json_output = serde_json::to_string_pretty(&aggregated_logs).unwrap();
     println!("{}", json_output);
 }

@@ -1,0 +1,9 @@
+# Define custom groupings here to help aggregating similar routes.
+# The name is optional, if not provided, the regexp will be used as the name.
+
+[[grouping]]
+regexp = '^/posts/\d+$'
+name = '/posts/:id'
+
+[[grouping]]
+regexp = '^/@[a-zA-Z0-9]+$'
