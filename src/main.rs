@@ -1,6 +1,16 @@
+use clap::Parser;
 use regex::Regex;
 use serde::{Deserialize, Serialize};
 use std::io::{self, BufRead};
+
+/// A simple log aggregator that reads logs from stdin and outputs aggregated logs in JSON format.
+#[derive(Parser, Debug)]
+#[command(version, about)]
+struct Args {
+    /// Path to the config file
+    #[arg(short, long)]
+    config: Option<String>,
+}
 
 #[derive(Deserialize, Debug)]
 struct LogEntry {
@@ -155,6 +165,8 @@ fn aggregate_logs(logs: Vec<LogEntry>) -> Vec<AggregatedLogEntry> {
 }
 
 fn main() {
+    let args = Args::parse();
+
     let stdin = io::stdin();
     let reader = stdin.lock();
 
