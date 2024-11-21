@@ -63,19 +63,28 @@ struct Config {
 struct Grouping {
     regexp: String,
     name: Option<String>,
+    #[serde(skip)]
+    compiled_regexp: Option<Regex>,
+}
+
+fn compile_groupings(groupings: &mut [Grouping]) {
+    for grouping in groupings {
+        grouping.compiled_regexp = Some(Regex::new(&grouping.regexp).unwrap());
+    }
 }
 
 fn normalize_uri(uri: &str, groupings: &[Grouping]) -> String {
     let trimmed_uri = uri.split('?').next().unwrap_or(uri);
 
     for grouping in groupings {
-        let regexp = Regex::new(&grouping.regexp).unwrap();
-        if regexp.is_match(uri) {
-            let replacement = match &grouping.name {
-                Some(replacement) => replacement,
-                None => &grouping.regexp,
-            };
-            return regexp.replace(uri, replacement).to_string();
+        if let Some(ref regexp) = grouping.compiled_regexp {
+            if regexp.is_match(uri) {
+                let replacement = match &grouping.name {
+                    Some(replacement) => replacement,
+                    None => &grouping.regexp,
+                };
+                return regexp.replace(uri, replacement).to_string();
+            }
         }
     }
     trimmed_uri.to_string()
@@ -178,7 +187,8 @@ fn main() {
     let groupings = match fs::metadata(&config_path).is_ok() {
         true => {
             let config_content = fs::read_to_string(config_path).unwrap();
-            let config: Config = toml::from_str(&config_content).unwrap();
+            let mut config: Config = toml::from_str(&config_content).unwrap();
+            compile_groupings(&mut config.grouping);
             config.grouping
         }
         false => Vec::new(),
