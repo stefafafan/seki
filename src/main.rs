@@ -95,7 +95,7 @@ fn aggregate_logs(logs: Vec<LogEntry>, groupings: &[Grouping]) -> Vec<Aggregated
         std::collections::HashMap::new();
 
     for log in &logs {
-        let normalized_uri = normalize_uri(&log.uri.clone(), &groupings);
+        let normalized_uri = normalize_uri(&log.uri.clone(), groupings);
         let key = (log.method.clone(), normalized_uri.clone());
         let current_log_aggregation = aggregated_logs.entry(key).or_insert(AggregatedLogEntry {
             method: log.method.clone(),
