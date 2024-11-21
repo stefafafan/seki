@@ -95,7 +95,7 @@ fn aggregate_logs(logs: Vec<LogEntry>) -> Vec<AggregatedLogEntry> {
         };
     }
 
-    for (_, entry) in &mut aggregated_logs {
+    for entry in aggregated_logs.values_mut() {
         let mut response_times: Vec<f64> = Vec::new();
         for log in &logs {
             if log.method == entry.method && log.uri == entry.uri {
