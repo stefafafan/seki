@@ -1,7 +1,10 @@
 use clap::Parser;
 use regex::Regex;
 use serde::{Deserialize, Serialize};
-use std::io::{self, BufRead};
+use std::{
+    fs,
+    io::{self, BufRead},
+};
 
 /// A simple log aggregator that reads logs from stdin and outputs aggregated logs in JSON format.
 #[derive(Parser, Debug)]
@@ -166,6 +169,17 @@ fn aggregate_logs(logs: Vec<LogEntry>) -> Vec<AggregatedLogEntry> {
 
 fn main() {
     let args = Args::parse();
+
+    let default_config_path = "./config.toml";
+    let config_path = match args.config {
+        Some(path) => path,
+        None => default_config_path.to_string(),
+    };
+
+    if fs::metadata(&config_path).is_ok() {
+        let config = fs::read_to_string(&config_path).unwrap();
+        println!("{}", config);
+    }
 
     let stdin = io::stdin();
     let reader = stdin.lock();
