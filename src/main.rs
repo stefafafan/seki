@@ -1,7 +1,8 @@
 use regex::Regex;
+use serde::{Deserialize, Serialize};
 use std::io::{self, BufRead};
 
-#[derive(serde::Deserialize, Debug)]
+#[derive(Deserialize, Debug)]
 struct LogEntry {
     method: String,
     uri: String,
@@ -9,7 +10,7 @@ struct LogEntry {
     response_time: String,
 }
 
-#[derive(Default, Debug)]
+#[derive(Default, Debug, Serialize)]
 struct AggregatedLogEntry {
     method: String,
     uri: String,
@@ -18,7 +19,7 @@ struct AggregatedLogEntry {
     response_time: ResponseTime,
 }
 
-#[derive(Default, Debug, Copy, Clone)]
+#[derive(Default, Debug, Copy, Clone, Serialize)]
 struct StatusCode {
     status_1xx: u64,
     status_2xx: u64,
@@ -27,7 +28,7 @@ struct StatusCode {
     status_5xx: u64,
 }
 
-#[derive(Default, Debug)]
+#[derive(Default, Debug, Serialize)]
 struct ResponseTime {
     min: f64,
     max: f64,
@@ -165,5 +166,6 @@ fn main() {
     }
 
     let aggregated_logs = aggregate_logs(logs);
-    println!("{:?}", aggregated_logs);
+    let json_output = serde_json::to_string_pretty(&aggregated_logs).unwrap();
+    println!("{}", json_output);
 }
