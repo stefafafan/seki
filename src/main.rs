@@ -1,3 +1,4 @@
+use regex::Regex;
 use std::io::{self, BufRead};
 
 #[derive(serde::Deserialize, Debug)]
@@ -39,15 +40,44 @@ struct ResponseTime {
     p99: f64,
 }
 
+fn normalize_uri(uri: &str, patterns: &[(Regex, String)]) -> String {
+    let trimmed_uri = uri.split('?').next().unwrap_or(uri);
+
+    for (regex, replacement) in patterns {
+        if regex.is_match(uri) {
+            return regex.replace(uri, replacement.as_str()).to_string();
+        }
+    }
+    trimmed_uri.to_string()
+}
+
 fn aggregate_logs(logs: Vec<LogEntry>) -> Vec<AggregatedLogEntry> {
     let mut aggregated_logs: std::collections::HashMap<(String, String), AggregatedLogEntry> =
         std::collections::HashMap::new();
 
+    let patterns = vec![
+        (
+            Regex::new(r"^/posts/\d+$").unwrap(),
+            "/posts/:id".to_string(),
+        ),
+        (
+            Regex::new(r"^/@[a-zA-Z0-9]+$").unwrap(),
+            "/@:username".to_string(),
+        ),
+        (
+            Regex::new(r"/image/.+$").unwrap(),
+            "/image/:filename".to_string(),
+        ),
+    ];
+
     for log in &logs {
-        let key = (log.method.clone(), log.uri.clone());
+        let key = (
+            log.method.clone(),
+            normalize_uri(&log.uri.clone(), &patterns),
+        );
         let current_log_aggregation = aggregated_logs.entry(key).or_insert(AggregatedLogEntry {
             method: log.method.clone(),
-            uri: log.uri.clone(),
+            uri: normalize_uri(&log.uri.clone(), &patterns),
             ..Default::default()
         });
 
