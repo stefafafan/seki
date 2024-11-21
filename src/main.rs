@@ -54,12 +54,16 @@ struct ResponseTime {
     p99: f64,
 }
 
-fn normalize_uri(uri: &str, patterns: &[(Regex, String)]) -> String {
+fn normalize_uri(uri: &str, patterns: &[(Regex, Option<String>)]) -> String {
     let trimmed_uri = uri.split('?').next().unwrap_or(uri);
 
     for (regex, replacement) in patterns {
         if regex.is_match(uri) {
-            return regex.replace(uri, replacement.as_str()).to_string();
+            let replacement = match replacement {
+                Some(replacement) => replacement,
+                None => regex.as_str(),
+            };
+            return regex.replace(uri, replacement).to_string();
         }
     }
     trimmed_uri.to_string()
@@ -72,15 +76,12 @@ fn aggregate_logs(logs: Vec<LogEntry>) -> Vec<AggregatedLogEntry> {
     let patterns = vec![
         (
             Regex::new(r"^/posts/\d+$").unwrap(),
-            "/posts/:id".to_string(),
+            Some("/posts/:id".to_string()),
         ),
-        (
-            Regex::new(r"^/@[a-zA-Z0-9]+$").unwrap(),
-            "/@:username".to_string(),
-        ),
+        (Regex::new(r"^/@[a-zA-Z0-9]+$").unwrap(), None),
         (
             Regex::new(r"/image/.+$").unwrap(),
-            "/image/:filename".to_string(),
+            Some("/image/:filename".to_string()),
         ),
     ];
 
@@ -177,8 +178,8 @@ fn main() {
     };
 
     if fs::metadata(&config_path).is_ok() {
-        let config = fs::read_to_string(&config_path).unwrap();
-        println!("{}", config);
+        fs::read_to_string(&config_path).unwrap();
+        // println!("{}", config);
     }
 
     let stdin = io::stdin();
