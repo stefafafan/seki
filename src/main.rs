@@ -19,9 +19,7 @@ struct Args {
     config: String,
 }
 
-fn main() {
-    let args = Args::parse();
-
+fn parse_config_and_logs(args: Args) -> (Vec<config::Grouping>, Vec<LogEntry>) {
     let groupings = match fs::metadata(&args.config).is_ok() {
         true => {
             let config_content = fs::read_to_string(args.config).unwrap();
@@ -41,7 +39,12 @@ fn main() {
         let entry: LogEntry = serde_json::from_str(&line).unwrap();
         logs.push(entry);
     }
+    (groupings, logs)
+}
 
+fn main() {
+    let args = Args::parse();
+    let (groupings, logs) = parse_config_and_logs(args);
     let aggregated_logs = aggregate_logs(logs, &groupings);
     let json_output = serde_json::to_string_pretty(&aggregated_logs).unwrap();
     println!("{}", json_output);
