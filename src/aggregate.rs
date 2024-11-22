@@ -2,7 +2,7 @@ use crate::config::Grouping;
 use regex::Regex;
 use serde::{Deserialize, Serialize};
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize)]
 pub struct LogEntry {
     method: String,
     uri: String,
@@ -10,7 +10,7 @@ pub struct LogEntry {
     response_time: String,
 }
 
-#[derive(Default, Debug, Serialize)]
+#[derive(Default, Serialize)]
 pub struct AggregatedLogEntry {
     method: String,
     uri: String,
@@ -19,7 +19,7 @@ pub struct AggregatedLogEntry {
     response_time: ResponseTime,
 }
 
-#[derive(Default, Debug, Copy, Clone, Serialize)]
+#[derive(Default, Copy, Clone, Serialize)]
 struct StatusCode {
     status_1xx: u64,
     status_2xx: u64,
@@ -28,7 +28,7 @@ struct StatusCode {
     status_5xx: u64,
 }
 
-#[derive(Default, Debug, Serialize)]
+#[derive(Default, Serialize)]
 struct ResponseTime {
     min: f64,
     max: f64,
