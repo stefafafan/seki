@@ -1,7 +1,6 @@
+use crate::config::Grouping;
 use regex::Regex;
 use serde::{Deserialize, Serialize};
-
-use crate::config::Grouping;
 
 #[derive(Deserialize, Debug)]
 pub struct LogEntry {

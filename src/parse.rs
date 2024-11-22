@@ -1,12 +1,11 @@
+use crate::{
+    aggregate::{compile_groupings, LogEntry},
+    config::{self, Config},
+};
 use clap::Parser;
 use std::{
     fs,
     io::{self, BufRead},
-};
-
-use crate::{
-    aggregate::{compile_groupings, LogEntry},
-    config::{self, Config},
 };
 
 /// A simple log aggregator that reads logs from stdin and outputs aggregated logs in JSON format.
