@@ -11,7 +11,7 @@ use std::{
 #[command(version, about)]
 struct Args {
     /// Path to the config file
-    #[arg(short, long, default_value = "./config.toml")]
+    #[arg(short, long, default_value = "config.toml")]
     config: String,
 }
 
