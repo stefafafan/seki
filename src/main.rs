@@ -11,8 +11,8 @@ use std::{
 #[command(version, about)]
 struct Args {
     /// Path to the config file
-    #[arg(short, long)]
-    config: Option<String>,
+    #[arg(short, long, default_value = "./config.toml")]
+    config: String,
 }
 
 #[derive(Deserialize, Debug)]
@@ -178,15 +178,9 @@ fn aggregate_logs(logs: Vec<LogEntry>, groupings: &[Grouping]) -> Vec<Aggregated
 fn main() {
     let args = Args::parse();
 
-    let default_config_path = "./config.toml";
-    let config_path = match args.config {
-        Some(path) => path,
-        None => default_config_path.to_string(),
-    };
-
-    let groupings = match fs::metadata(&config_path).is_ok() {
+    let groupings = match fs::metadata(&args.config).is_ok() {
         true => {
-            let config_content = fs::read_to_string(config_path).unwrap();
+            let config_content = fs::read_to_string(args.config).unwrap();
             let mut config: Config = toml::from_str(&config_content).unwrap();
             compile_groupings(&mut config.grouping);
             config.grouping
