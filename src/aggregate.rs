@@ -2,7 +2,7 @@ use crate::config::Grouping;
 use regex::Regex;
 use serde::{Deserialize, Serialize};
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize)]
 pub struct LogEntry {
     method: String,
     uri: String,
@@ -10,7 +10,7 @@ pub struct LogEntry {
     response_time: String,
 }
 
-#[derive(Default, Debug, Serialize)]
+#[derive(Default, Serialize)]
 pub struct AggregatedLogEntry {
     method: String,
     uri: String,
@@ -19,7 +19,7 @@ pub struct AggregatedLogEntry {
     response_time: ResponseTime,
 }
 
-#[derive(Default, Debug, Copy, Clone, Serialize)]
+#[derive(Default, Copy, Clone, Serialize)]
 struct StatusCode {
     status_1xx: u64,
     status_2xx: u64,
@@ -28,7 +28,7 @@ struct StatusCode {
     status_5xx: u64,
 }
 
-#[derive(Default, Debug, Serialize)]
+#[derive(Default, Serialize)]
 struct ResponseTime {
     min: f64,
     max: f64,
@@ -64,11 +64,11 @@ pub fn normalize_uri(uri: &str, groupings: &[Grouping]) -> String {
     trimmed_uri.to_string()
 }
 
-pub fn aggregate_logs(logs: Vec<LogEntry>, groupings: &[Grouping]) -> Vec<AggregatedLogEntry> {
+pub fn aggregate_logs(logs: &[LogEntry], groupings: &[Grouping]) -> Vec<AggregatedLogEntry> {
     let mut aggregated_logs: std::collections::HashMap<(String, String), AggregatedLogEntry> =
         std::collections::HashMap::new();
 
-    for log in &logs {
+    for log in logs {
         let normalized_uri = normalize_uri(&log.uri.clone(), groupings);
         let key = (log.method.clone(), normalized_uri.clone());
         let current_log_aggregation = aggregated_logs.entry(key).or_insert(AggregatedLogEntry {
@@ -123,7 +123,7 @@ pub fn aggregate_logs(logs: Vec<LogEntry>, groupings: &[Grouping]) -> Vec<Aggreg
 
     for entry in aggregated_logs.values_mut() {
         let mut response_times: Vec<f64> = Vec::new();
-        for log in &logs {
+        for log in logs {
             if log.method == entry.method && log.uri == entry.uri {
                 if let Ok(time) = log.response_time.parse::<f64>() {
                     response_times.push(time);
