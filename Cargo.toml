@@ -1,6 +1,14 @@
 [package]
 name = "seki"
 version = "0.1.0"
+authors = ["stefafafan <github.le5ke@stenyan.jp>"]
+license = "MIT"
+description = "A CLI tool to help parse and aggregate access log data for further analysis."
+readme = "README.md"
+homepage = "https://github.com/stefafafan/seki"
+repository = "https://github.com/stefafafan/seki"
+keywords = ["cli", "log", "parser", "aggregator", "access log"]
+categories = ["command-line-utilities"]
 edition = "2021"
 
 [dependencies]
