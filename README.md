@@ -22,7 +22,7 @@ Either download the corresponding binary or use the installer shellscript.
 
 ```sh
 # Using the binary
-$ sudo install <downloaded asset file> /usr/local/bin/seki
+sudo install <downloaded asset file> /usr/local/bin/seki
 ```
 
 ### Using cargo-binstall
@@ -38,7 +38,7 @@ cargo binstall seki
 With [Rust](https://rustup.rs/) installed:
 
 ```sh
-$ cargo install seki
+cargo install seki
 ```
 
 ## Usage
@@ -46,7 +46,7 @@ $ cargo install seki
 seki reads access log in JSON format from stdin, and outputs to stdout as JSON.
 
 ```sh
-$ cat access.log | seki
+cat access.log | seki
 ```
 
 seki parses the following keys, make sure the access log has these:
@@ -79,8 +79,8 @@ Sometimes you will want to group endpoints together (for example, `/post/123` an
 Create a `config.toml` file to define these groupings.
 
 ```sh
-$ cp config.toml.example config.toml
-$ # edit config.toml with your favorite editor.
+cp config.toml.example config.toml
+# edit config.toml with your favorite editor.
 ```
 
 You can either use the default path to the config file, or specify with the command line option.
