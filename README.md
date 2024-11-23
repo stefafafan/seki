@@ -23,9 +23,6 @@ Either download the corresponding binary or use the installer shellscript.
 ```sh
 # Using the binary
 $ sudo install <downloaded asset file> /usr/local/bin/seki
-
-# OR using the installer script
-$ ./seki-installer.sh
 ```
 
 ### Using cargo-binstall
