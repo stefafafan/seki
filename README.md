@@ -97,7 +97,9 @@ $ cat access.log | seki
 ]
 ```
 
-This can now be used in conjunction with jq. The following sample demonstrates sorting the `uri`s by `response_time.sum`.
+### Using seki with jq
+
+The previous example can be used in conjunction with [jq](https://github.com/jqlang/jq). The following sample demonstrates sorting the `uri`s by `response_time.sum`.
 
 ```sh
 $ cat access.log | seki | jq 'sort_by(-.response_time.sum) | .[] | {uri: .uri, response_time_sum: .response_time.sum}'
@@ -115,7 +117,7 @@ $ cat access.log | seki | jq 'sort_by(-.response_time.sum) | .[] | {uri: .uri, r
 }
 ```
 
-If you prefer a tabular format, maybe you can even use jq in conjunction with column commands to do this:
+If you prefer a tabular format, maybe you can use jq in conjunction with the column command to do this:
 
 ```sh
 $ cat access.log | seki | \
