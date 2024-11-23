@@ -30,6 +30,23 @@ seki parses the following keys, make sure the access log has these:
 - `status`
 - `response_time`
 
+For nginx, set the log_format to something like this:
+
+```nginx.conf
+log_format json escape=json '{'
+                            '"time":"$time_iso8601",'
+                            '"host":"$remote_addr",'
+                            '"method":"$request_method",'
+                            '"uri":"$request_uri",'
+                            '"status":"$status",'
+                            '"body_bytes":"$body_bytes_sent",'
+                            '"referer":"$http_referer",'
+                            '"ua":"$http_user_agent",'
+                            '"request_time":"$request_time",'
+                            '"response_time":"$upstream_response_time"'
+                            '}';
+```
+
 ### Grouping endpoints with the config file
 
 Sometimes you will want to group endpoints together (for example, `/post/123` and `/post/456`).
