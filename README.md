@@ -14,6 +14,32 @@ seki focuses on parsing and outputting metrics as JSON, for easy integration and
 
 ## Installation
 
+### Download assets from the releases page
+
+The https://github.com/stefafafan/seki/releases page has assets including binaries along with an installer shellscript.
+
+Either download the corresponding binary or use the installer shellscript.
+
+```sh
+# Using the binary
+$ sudo install <downloaded asset file> /usr/local/bin/seki
+
+# OR using the installer script
+$ ./seki-installer.sh
+```
+
+### Using cargo-binstall
+
+If you have [cargo-binstall](https://github.com/cargo-bins/cargo-binstall), you can use this as well.
+
+```sh
+cargo binstall seki
+```
+
+### Build from source
+
+With [Rust](https://rustup.rs/) installed:
+
 ```sh
 $ cargo install seki
 ```
