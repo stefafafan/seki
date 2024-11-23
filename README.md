@@ -14,6 +14,14 @@ seki focuses on parsing and outputting metrics as JSON, for easy integration and
 
 ## Installation
 
+### Download assets from the releases page
+
+The https://github.com/stefafafan/seki/releases page has assets including binaries along with an installer shellscript.
+
+Either download the corresponding binary or use the installer shellscript.
+
+### Using cargo to build from source
+
 ```sh
 $ cargo install seki
 ```
