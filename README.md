@@ -14,7 +14,9 @@ seki focuses on parsing and outputting metrics as JSON, for easy integration and
 
 ## Installation
 
-TODO
+```sh
+$ cargo install seki
+```
 
 ## Usage
 
