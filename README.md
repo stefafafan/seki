@@ -4,6 +4,14 @@ seki is a CLI tool to help parse and aggregate access log data for further analy
 
 The name seki comes from the Japanese terms 積 (from 蓄積 which means accumulate) and 析 (from 分析 which means analysis). These kanji are both read "seki".
 
+This tool is heavily influenced by [tkuchiki/alp](https://github.com/tkuchiki/alp) and [matsuu/kataribe](https://github.com/matsuu/kataribe).
+
+## Why seki?
+
+Other tools do everything for you from aggregation to pretty-print display. For most users these tools are sufficient.
+
+seki focuses on parsing and outputting metrics as JSON, for easy integration and processing.
+
 ## Installation
 
 TODO
