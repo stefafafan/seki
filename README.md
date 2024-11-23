@@ -25,63 +25,75 @@ seki aggregates the logs into one simple JSON.
 ```sh
 $ cat access.log | seki
 [
-    {
-        "uri": "/foobar",
-        "method": "GET",
-        "count": 2,
-        "status_code": {
-            "1xx": 0,
-            "2xx": 2,
-            "3xx": 0,
-            "4xx": 0,
-            "5xx": 0
-        },
-        "response_time": {
-            "min": 0.476,
-            "max": 0.732,
-            "sum": 1.208,
-            "avg": 0.604,
-            "p99": 0.732
-        }
+  {
+    "method": "GET",
+    "uri": "/hello",
+    "count": 1,
+    "status_code": {
+      "status_1xx": 0,
+      "status_2xx": 0,
+      "status_3xx": 1,
+      "status_4xx": 0,
+      "status_5xx": 0
     },
-    {
-        "uri": "/",
-        "method": "GET",
-        "count": 1,
-        "status_code": {
-            "1xx": 0,
-            "2xx": 0,
-            "3xx": 0,
-            "4xx": 1,
-            "5xx": 0
-        },
-        "response_time": {
-            "min": 0.239,
-            "max": 0.239,
-            "sum": 0.239,
-            "avg": 0.239,
-            "p99": 0.239
-        }
-    },
-    {
-        "uri": "/hello",
-        "method": "GET",
-        "count": 1,
-        "status_code": {
-            "1xx": 0,
-            "2xx": 0,
-            "3xx": 1,
-            "4xx": 0,
-            "5xx": 0
-        },
-        "response_time": {
-            "min": 0.113,
-            "max": 0.113,
-            "sum": 0.113,
-            "avg": 0.113,
-            "p99": 0.113
-        }
+    "response_time": {
+      "min": 0.0,
+      "max": 0.113,
+      "avg": 0.113,
+      "sum": 0.113,
+      "p50": 0.113,
+      "p75": 0.113,
+      "p90": 0.113,
+      "p95": 0.113,
+      "p99": 0.113
     }
+  },
+  {
+    "method": "GET",
+    "uri": "/foobar",
+    "count": 2,
+    "status_code": {
+      "status_1xx": 0,
+      "status_2xx": 2,
+      "status_3xx": 0,
+      "status_4xx": 0,
+      "status_5xx": 0
+    },
+    "response_time": {
+      "min": 0.0,
+      "max": 0.732,
+      "avg": 0.604,
+      "sum": 1.208,
+      "p50": 0.732,
+      "p75": 0.732,
+      "p90": 0.732,
+      "p95": 0.732,
+      "p99": 0.732
+    }
+  },
+  {
+    "method": "GET",
+    "uri": "/",
+    "count": 1,
+    "status_code": {
+      "status_1xx": 0,
+      "status_2xx": 0,
+      "status_3xx": 0,
+      "status_4xx": 1,
+      "status_5xx": 0
+    },
+    "response_time": {
+      "min": 0.0,
+      "max": 0.239,
+      "avg": 0.239,
+      "sum": 0.239,
+      "p50": 0.239,
+      "p75": 0.239,
+      "p90": 0.239,
+      "p95": 0.239,
+      "p99": 0.239
+    }
+  }
 ]
 ```
 
@@ -101,4 +113,23 @@ $ cat access.log | seki | jq 'sort_by(-.response_time.sum) | .[] | {uri: .uri, r
   "uri": "/hello",
   "response_time_sum": 0.113
 }
+```
+
+If you prefer a tabular format, maybe you can even use jq in conjunction with column commands to do this:
+
+```sh
+$ cat access.log | seki | \
+    jq -r "sort_by(-.response_time.sum) | \
+        .[] | \
+        [.method + \" \" + .uri, \
+        .status_code.status_2xx, \
+        .status_code.status_3xx, \
+        .status_code.status_4xx, \
+        .status_code.status_5xx, \
+        .response_time.sum] | \
+        @tsv" | \
+    column -t
+GET  /foobar  2  0  0  0  1.208
+GET  /        0  0  1  0  0.239
+GET  /hello   0  1  0  0  0.113
 ```
