@@ -28,7 +28,17 @@ $ sudo install <downloaded asset file> /usr/local/bin/seki
 $ ./seki-installer.sh
 ```
 
-### Using cargo to build from source
+### Using cargo-binstall
+
+If you have [cargo-binstall](https://github.com/cargo-bins/cargo-binstall), you can use this as well.
+
+```sh
+cargo binstall seki
+```
+
+### Build from source
+
+With [Rust](https://rustup.rs/) installed:
 
 ```sh
 $ cargo install seki
