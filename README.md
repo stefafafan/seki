@@ -20,6 +20,14 @@ The https://github.com/stefafafan/seki/releases page has assets including binari
 
 Either download the corresponding binary or use the installer shellscript.
 
+```sh
+# Using the binary
+$ sudo install <downloaded asset file> /usr/local/bin/seki
+
+# OR using the installer script
+$ ./seki-installer.sh
+```
+
 ### Using cargo to build from source
 
 ```sh
