@@ -1,6 +1,6 @@
 [package]
 name = "seki"
-version = "0.1.1"
+version = "0.1.2"
 authors = ["stefafafan <github.le5ke@stenyan.jp>"]
 license = "MIT"
 description = "A CLI tool to help parse and aggregate access log data for further analysis."
