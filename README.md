@@ -16,7 +16,41 @@ seki focuses on parsing and outputting metrics as JSON, for easy integration and
 
 TODO
 
-## Example
+## Usage
+
+seki reads access log in JSON format from stdin, and outputs to stdout as JSON.
+
+```sh
+$ cat access.log | seki
+```
+
+seki parses the following keys, make sure the access log has these:
+- `method`
+- `uri`
+- `status`
+- `response_time`
+
+### Grouping endpoints with the config file
+
+Sometimes you will want to group endpoints together (for example, `/post/123` and `/post/456`).
+
+Create a `config.toml` file to define these groupings.
+
+```sh
+$ cp config.toml.example config.toml
+$ # edit config.toml with your favorite editor.
+```
+
+You can either use the default path to the config file, or specify with the command line option.
+
+```sh
+# uses config.toml if it exists
+$ cat access.log | seki
+# setting the path to the config file.
+$ cat access.log | seki --config ~/foo/config.toml
+```
+
+## Examples
 
 Let's say you have an access log file like this:
 
